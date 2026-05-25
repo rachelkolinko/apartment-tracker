@@ -1,0 +1,91 @@
+@host = http://localhost:5121
+
+### Register
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "rachel@test.com",
+  "password": "password123"
+}
+
+### Login (captures token)
+# @name login
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "rachel@test.com",
+  "password": "password123"
+}
+
+###
+
+@token = {{login.response.body.token}}
+
+### Create apartment
+POST {{host}}/api/apartments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "neighborhood": "פלורנטין",
+  "address": "אבן גבירול 50",
+  "rooms": 3,
+  "sizeSqm": 70,
+  "price": 6500,
+  "status": "Interested",
+  "contactName": "יוסי",
+  "contactPhone": "050-1234567",
+  "listingUrl": "https://yad2.co.il/item/123",
+  "notes": "קומה 2 בלי מעלית"
+}
+
+### List all my apartments
+GET {{host}}/api/apartments
+Authorization: Bearer {{token}}
+
+### Get one apartment (החליפי את 1 ב-id האמיתי שחזר מה-Create)
+GET {{host}}/api/apartments/1
+Authorization: Bearer {{token}}
+
+### Update status
+PATCH {{host}}/api/apartments/1/status
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "Visited"
+}
+
+### Delete
+DELETE {{host}}/api/apartments/1
+Authorization: Bearer {{token}}
+
+### Test without token — צריך להחזיר 401
+GET {{host}}/api/apartments
+
+
+### Create visit
+POST {{host}}/api/visits
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "apartmentId": 1,
+  "visitDate": "2026-05-20T18:00:00",
+  "rating": 4,
+  "notes": "אור טוב, חניה אין, מטבח קטן"
+}
+
+### Verify visit appears in apartment detail
+GET {{host}}/api/apartments/1
+Authorization: Bearer {{token}}
+
+### Delete visit (החליפי את 1 ב-id שחזר מה-Create)
+DELETE {{host}}/api/visits/1
+Authorization: Bearer {{token}}
+
+### Dashboard stats
+GET {{host}}/api/stats/dashboard
+Authorization: Bearer {{token}}
